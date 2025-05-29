@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Blackjack Practice</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0d7d2d;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .hand-container {
+      margin: 20px 0;
+    }
+
+    .card {
+      width: 80px;
+      margin: 5px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin: 10px;
+      cursor: pointer;
+    }
+
+    #message {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Blackjack Trainer</h1>
+
+  <div>
+    <button onclick="startGame()">Start</button>
+    <button onclick="hit()">Hit</button>
+    <button onclick="stand()">Stand</button>
+  </div>
+
+  <div class="hand-container">
+    <h2>Dealer's Hand</h2>
+    <div id="dealer-hand"></div>
+  </div>
+
+  <div class="hand-container">
+    <h2>Your Hand</h2>
+    <div id="player-hand"></div>
+  </div>
+
+  <div id="message"></div>
+
+  <script>
+    async function startGame() {
+      const res = await fetch("/start", { method: "POST" });
+      const data = await res.json();
+      renderHand("player-hand", data.player);
+      renderHand("dealer-hand", data.dealer);
+      document.getElementById("message").textContent = data.message;
+    }
+
+    async function hit() {
+      const res = await fetch("/hit", { method: "POST" });
+      const data = await res.json();
+      renderHand("player-hand", data.player);
+      if (data.message) {
+        document.getElementById("message").textContent = data.message;
+      }
+    }
+
+    async function stand() {
+      const res = await fetch("/stand", { method: "POST" });
+      const data = await res.json();
+      renderHand("dealer-hand", data.dealer);
+      document.getElementById("message").textContent = data.result;
+    }
+
+    function renderHand(containerId, hand) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+  hand.forEach(card => {
+    const img = document.createElement("img");
+    img.src = card.image;  // Use JS object property
+    img.alt = `${card.value} of ${card.suit}`;
+    img.className = "card";
+    container.appendChild(img);
+  });
+}
+  </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+body {
+    font-family: sans-serif;
+    background-color: #0b9150;
+    color: rgb(255, 255, 255);
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+  }
+  
+  #game {
+    max-width: 600px;
+    margin: auto;
+    background: #8fbfa4;
+    border-radius: 10px;
+    padding: 20px;
+  }
+  
+  .hand {
+    margin-bottom: 20px;
+  }
+  
+  .card {
+    display: inline-block;
+    background: white;
+    color: black;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    width: 240px;
+    height: auto;
+    line-height: 40px;
+    font-weight: bold;
+  }
+  
+  button {
+    margin: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+  }
+  
