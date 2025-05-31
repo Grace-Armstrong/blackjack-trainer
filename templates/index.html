@@ -42,6 +42,16 @@
 <body>
   <h1>Blackjack Trainer</h1>
 
+  <!-- Play Settings -->
+  <div id="settings" style="display:none; position:fixed; top:30%; left:50%; transform:translate(-50%, -30%); background:#fff; padding:20px; border-radius:8px; z-index:1000; color:black;">
+    <h3>Game Settings</h3>
+    <label for="deck-count">Number of Decks (normally 6):</label> 
+    <input type="number" id="deck-count" value="1" min="1" max="10" style="width:60px;" />
+    <br><br>
+    <button onclick="submitSettings()">Save</button>
+    <button onclick="closeSettings()">Cancel</button>
+  </div>
+
   <div>
     <button onclick="startGame()">Start</button>
     <button onclick="hit()">Hit</button>
