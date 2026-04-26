@@ -1,7 +1,7 @@
 # blackjack-trainer
-# 🃏 Blackjack Trainer
+# Blackjack Trainer
 
-This is a blackjack game that helps users practice basic strategy and card counting. 
+This is a blackjack game that helps users practice basic strategy. Card counting has not been implmented yet. 
 
 ### 1. Setup Instructions  
 
@@ -17,3 +17,5 @@ pip install -r requirements.txt
 python app.py
 
 '''
+
+![Screenshot](static/images/gameplay.png)
