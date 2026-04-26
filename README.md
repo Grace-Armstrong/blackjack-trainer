@@ -16,6 +16,7 @@ pip install -r requirements.txt
 # launch the game and open the address listed
 python app.py
 
-'''
-
-![Screenshot](static/images/gameplay.png)
+```
+### 2. Enjoy Game Play
+<img src="static/images/gameplay.png" width="600"/>
+The game has the ability to toggle off/on basic strategy suggestions. 
