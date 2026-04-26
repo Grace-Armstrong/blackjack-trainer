@@ -2,110 +2,121 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Blackjack Practice</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #0d7d2d;
-      color: white;
-      text-align: center;
-      padding: 20px;
-    }
-
-    h1 {
-      margin-bottom: 20px;
-    }
-
-    .hand-container {
-      margin: 20px 0;
-    }
-
-    .card {
-      width: 80px;
-      margin: 5px;
-    }
-
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      margin: 10px;
-      cursor: pointer;
-    }
-
-    #message {
-      margin-top: 20px;
-      font-size: 20px;
-      font-weight: bold;
-    }
-  </style>
+  <title>Blackjack Trainer</title>
+  <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
   <h1>Blackjack Trainer</h1>
 
-  <!-- Play Settings -->
-  <div id="settings" style="display:none; position:fixed; top:30%; left:50%; transform:translate(-50%, -30%); background:#fff; padding:20px; border-radius:8px; z-index:1000; color:black;">
-    <h3>Game Settings</h3>
-    <label for="deck-count">Number of Decks (normally 6):</label> 
-    <input type="number" id="deck-count" value="1" min="1" max="10" style="width:60px;" />
-    <br><br>
-    <button onclick="submitSettings()">Save</button>
-    <button onclick="closeSettings()">Cancel</button>
-  </div>
+  <!-- Settings Panel -->
+  <form method="POST" action="/set_settings">
+    <fieldset id="settings-panel">
+      <legend>Settings</legend>
+      <label for="deck-count">Number of decks:</label>
+      <input type="number" id="deck-count" name="deck_count" min="1" max="10" value="6">
+      <button type="submit">Update Settings</button>
+    </fieldset>
+  </form>
 
+  <!-- Game Controls -->
   <div>
-    <button onclick="startGame()">Start</button>
-    <button onclick="hit()">Hit</button>
-    <button onclick="stand()">Stand</button>
+    <button id="start-button" type="button" onclick="startGame()">Start</button>
+    <button id="hit-button" type="button" onclick="hit()">Hit</button>
+    <button id="stand-button" type="button" onclick="stand()">Stand</button>
+    <label>
+      <input type="checkbox" id="suggestions-toggle" onchange="toggleSuggestions()" checked>
+      Show suggestions
+    </label>
   </div>
 
-  <div class="hand-container">
+  <!-- Dealer Hand -->
+  <div id="dealer-container" class="hand-container">
     <h2>Dealer's Hand</h2>
     <div id="dealer-hand"></div>
   </div>
 
-  <div class="hand-container">
+  <!-- Player Hand -->
+  <div id="player-container" class="hand-container">
     <h2>Your Hand</h2>
     <div id="player-hand"></div>
   </div>
 
+  <!-- Message Display -->
   <div id="message"></div>
+  <div id="suggestion" class="suggestion"></div>
 
   <script>
-    async function startGame() {
-      const res = await fetch("/start", { method: "POST" });
-      const data = await res.json();
-      renderHand("player-hand", data.player);
-      renderHand("dealer-hand", data.dealer);
-      document.getElementById("message").textContent = data.message;
+    let suggestionsEnabled = true;
+
+    function toggleSuggestions() {
+      suggestionsEnabled = document.getElementById("suggestions-toggle").checked;
     }
 
-    async function hit() {
-      const res = await fetch("/hit", { method: "POST" });
-      const data = await res.json();
-      renderHand("player-hand", data.player);
-      if (data.message) {
-        document.getElementById("message").textContent = data.message;
+    function updateUI(data) {
+      document.getElementById("start-button").style.display = data.showStartButton ? "inline-block" : "none";
+      document.getElementById("hit-button").style.display = data.showActionButtons ? "inline-block" : "none";
+      document.getElementById("stand-button").style.display = data.showActionButtons ? "inline-block" : "none";
+      document.getElementById("dealer-container").style.display = data.showHandLabels ? "block" : "none";
+      document.getElementById("player-container").style.display = data.showHandLabels ? "block" : "none";
+      document.getElementById("message").textContent = data.result || data.message || "";
+      document.getElementById("suggestion").textContent = data.suggestion || "";
+
+      if (data.player) {
+        renderHand("player-hand", data.player);
+      } else {
+        document.getElementById("player-hand").innerHTML = "";
+      }
+
+      if (data.dealer) {
+        renderHand("dealer-hand", data.dealer);
+      } else {
+        document.getElementById("dealer-hand").innerHTML = "";
       }
     }
 
-    async function stand() {
-      const res = await fetch("/stand", { method: "POST" });
+    async function startGame() {
+      const res = await fetch("/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ suggestions: suggestionsEnabled })
+      });
       const data = await res.json();
-      renderHand("dealer-hand", data.dealer);
-      document.getElementById("message").textContent = data.result;
+      updateUI(data);
+    }
+
+    async function hit() {
+      const res = await fetch("/hit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ suggestions: suggestionsEnabled })
+      });
+      const data = await res.json();
+      updateUI(data);
+    }
+
+    async function stand() {
+      const res = await fetch("/stand", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ suggestions: suggestionsEnabled })
+      });
+      const data = await res.json();
+      updateUI(data);
     }
 
     function renderHand(containerId, hand) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = "";
-  hand.forEach(card => {
-    const img = document.createElement("img");
-    img.src = card.image;  // Use JS object property
-    img.alt = `${card.value} of ${card.suit}`;
-    img.className = "card";
-    container.appendChild(img);
-  });
-}
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+      hand.forEach(card => {
+        const img = document.createElement("img");
+        img.src = card.image;
+        img.alt = `${card.value} of ${card.suit}`;
+        img.className = "card";
+        container.appendChild(img);
+      });
+    }
+
+    updateUI({ showStartButton: true, showActionButtons: false, showHandLabels: false, result: "", suggestion: "" });
   </script>
 </body>
 </html>

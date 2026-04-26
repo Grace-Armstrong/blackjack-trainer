@@ -13,7 +13,7 @@ git clone https://github.com/Grace-Armstrong/blackjack-trainer.git
 cd blackjack-strategy-game
 pip install -r requirements.txt
 
-# launch game and open address
+# launch the game and open the address listed
 python app.py
-# select http://localhost:5000
+
 '''
